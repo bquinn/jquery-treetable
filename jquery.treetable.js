@@ -182,7 +182,9 @@
       if (!this.initialized) {
         this._initialize();
       }
-      this.row.show();
+      if (!this.row.hasClass("invisible")) {
+        this.row.show();
+      }
       if (this.expanded()) {
         this._showChildren();
       }
@@ -233,7 +235,9 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
-        _results.push(child.show());
+        if (!child.row.hasClass("invisible")) {
+          _results.push(child.show());
+        }
       }
       return _results;
     };
@@ -512,6 +516,21 @@
       return this;
     },
 
+    makeInvisible: function(id) {
+      var node = this.data("treetable").tree[id];
+
+      if (node) {
+        node.row.addClass("invisible");
+        if (!node.row.hidden) {
+            node.hide();
+        }
+      } else {
+        throw new Error("Unknown node '" + id + "'");
+      }
+
+      return this;
+    },
+
     loadBranch: function(node, rows) {
       var treetable = this.data("treetable");
       var settings = treetable.settings,
@@ -579,6 +598,23 @@
 
       return this;
     },
+
+    makeVisible: function(id) {
+      var node = this.data("treetable").tree[id];
+
+      if (node) {
+        node.row.removeClass("invisible");
+        var parentNode = this.data("treetable").tree[node.parentId];
+        if (parentNode.expanded()) {
+            node.show();
+        }
+      } else {
+        throw new Error("Unknown node '" + id + "'");
+      }
+
+      return this;
+    },
+
 
     sortBranch: function(node, columnOrFunction) {
       var settings = this.data("treetable").settings,
